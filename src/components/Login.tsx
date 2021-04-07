@@ -15,10 +15,14 @@ const initialState: AuthState = {
   nombre: "",
 };
 
-//la action debe estar definida por lo general se utiliza type
-type AuthAction = {
-  type: "logout";
+type LoginPayload = {
+  username: string;
+  nombre: string;
 };
+
+//la action debe estar definida por lo general se utiliza type
+// Se utiliza | para diferentes actions
+type AuthAction = { type: "logout" } | { type: "login"; payload: LoginPayload };
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
@@ -28,6 +32,13 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         token: null,
         nombre: "",
         username: "",
+      };
+    case "login":
+      return {
+        ...state,
+        token: "AJDSJ43345",
+        nombre: action.payload.nombre,
+        username: action.payload.username,
       };
     default:
       return state;
@@ -52,14 +63,35 @@ export default function Login() {
     );
   }
 
+  const login = () => {
+    dispatch({
+      type: "login",
+      payload: { username: "dunapanta", nombre: "Daniel" },
+    });
+  };
+
+  const logout = () => {
+      dispatch({
+          type: 'logout'
+      })
+  }
+
   return (
     <>
       <h3>Login</h3>
-      <div className="alet alert-danger">No autenticado</div>
-      <div className="alet alert-success">Autenticado</div>
+      {state.token ? (
+        <div className="alet alert-success">
+          Autenticado como: {state.nombre}
+        </div>
+      ) : (
+        <div className="alet alert-danger">No autenticado</div>
+      )}
 
-      <button className="btn btn-primary">Iniciar Sesión</button>
-      <button className="btn btn-danger">Cerrar Sesión</button>
+      {state.token ? (
+        <button onClick={logout} className="btn btn-danger">Cerrar Sesión</button>
+      ) : (
+        <button onClick={login} className="btn btn-primary">Iniciar Sesión</button>
+      )}
     </>
   );
 }
